@@ -17,16 +17,18 @@ fun main() {
         println("mess: $messageEvent")
         runBlocking {
             client.sendMessage {
+                message = when (messageEvent.message.text) {
+                    "1" -> "kek"
+                    "2" -> "dfjfghdjng"
+                    else -> "Ничего не понятно"
+                }
                 peerId = messageEvent.message.peerId
-                message = "Hello, World!"
+
 
                 // You can use stickers, replies, location, etc.
                 // All of the message parameters are supported.
             }.execute()
         }
-    }
-    client.onEachEvent {
-        println("$it")
     }
 
     runBlocking { client.startLongPolling() }
