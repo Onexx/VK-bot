@@ -3,7 +3,6 @@ package model.repository.impl
 import model.database.DatabaseUtils
 import model.domain.DialogState
 import model.domain.DialogState.valueOf
-import model.exception.RepositoryException
 import model.repository.StateRepository
 import java.sql.ResultSet
 import java.sql.ResultSetMetaData
@@ -16,18 +15,18 @@ class MariaDbStateRepositoryImpl : StateRepository {
         try {
             dataSource.connection.use { connection ->
                 connection.prepareStatement(
-                    "INSERT INTO `State` (`userId`, `state`) VALUES (?, ?)"
+                    "REPLACE INTO `State` (`userId`, `state`) VALUES (?, ?)"
                 ).use { statement ->
                     statement.setInt(1, userId)
                     statement.setString(2, state.name)
 
                     if (statement.executeUpdate() != 1) {
-                        throw RepositoryException("Can't save state.")
+                        System.err.println("Couldn't save state for user $userId: Update unsuccessful")
                     }
                 }
             }
         } catch (e: SQLException) {
-            throw RepositoryException("Can't save User.", e)
+            System.err.println("Couldn't save state for user $userId: $e")
         }
     }
 

@@ -10,8 +10,9 @@ import model.service.StateService
 
 @ExperimentalCoroutinesApi
 fun main() {
-    val groupId = -1
-    val accessToken = "secret-token"
+    println("Server started")
+    val groupId = System.getenv("GROUP_ID")?.toInt() ?: 0
+    val accessToken = System.getenv("ACCESS_TOKEN") ?: ""
 
     val vkHttpClient = VkOkHttpClient()
 
@@ -35,16 +36,19 @@ fun main() {
                         }
                     }.execute()
 
-                    "изменить состояние 1" -> client.sendMessage {
-                        message = Messages.getMessage("ChangedToSecondState")
-                        peerId = messageEvent.message.peerId
-                        keyboard = keyboard(oneTime = true) {
-                            row {
-                                secondaryButton("оставить состояние 2")
-                                secondaryButton("изменить состояние 2")
+                    "изменить состояние 1" -> {
+                        stateService.saveState(messageEvent.message.peerId, TASK_CREATION_SET_TEXT)
+                        client.sendMessage {
+                            message = Messages.getMessage("ChangedToSecondState")
+                            peerId = messageEvent.message.peerId
+                            keyboard = keyboard(oneTime = true) {
+                                row {
+                                    secondaryButton("оставить состояние 2")
+                                    secondaryButton("изменить состояние 2")
+                                }
                             }
-                        }
-                    }.execute()
+                        }.execute()
+                    }
                     else -> {}
                 }
             }
@@ -61,16 +65,19 @@ fun main() {
                         }
                     }.execute()
 
-                    "изменить состояние 2" -> client.sendMessage {
-                        message = Messages.getMessage("ChangedToFirstState")
-                        peerId = messageEvent.message.peerId
-                        keyboard = keyboard(oneTime = true) {
-                            row {
-                                secondaryButton("оставить состояние 1")
-                                secondaryButton("изменить состояние 1")
+                    "изменить состояние 2" -> {
+                        stateService.saveState(messageEvent.message.peerId, DIALOG)
+                        client.sendMessage {
+                            message = Messages.getMessage("ChangedToFirstState")
+                            peerId = messageEvent.message.peerId
+                            keyboard = keyboard(oneTime = true) {
+                                row {
+                                    secondaryButton("оставить состояние 1")
+                                    secondaryButton("изменить состояние 1")
+                                }
                             }
-                        }
-                    }.execute()
+                        }.execute()
+                    }
                     else -> {}
                 }
             }

@@ -1,32 +1,25 @@
 package model.database
 
 import org.mariadb.jdbc.MariaDbDataSource
-import java.io.IOException
 import java.sql.SQLException
-import java.util.*
 import javax.sql.DataSource
 
 object DatabaseUtils {
 
     fun getDataSource(): DataSource {
+        if (DataSourceHolder.INSTANCE == null) throw RuntimeException("Couldn't initialize DataSource")
         return DataSourceHolder.INSTANCE!!
     }
 
     private object DataSourceHolder {
         var INSTANCE: DataSource? = null
-        private val properties = Properties()
 
         init {
             try {
-                properties.load(DataSourceHolder::class.java.getResourceAsStream("/application.properties"))
-            } catch (e: IOException) {
-                throw RuntimeException("Can't load /application.properties.", e)
-            }
-            try {
                 val instance = MariaDbDataSource()
-                instance.setUrl(properties.getProperty("database.url"))
-                instance.user = properties.getProperty("database.user")
-                instance.setPassword(properties.getProperty("database.password"))
+                instance.setUrl(System.getenv("DATABASE_URL"))
+                instance.user = System.getenv("DATABASE_USER")
+                instance.setPassword(System.getenv("DATABASE_PASSWORD"))
                 INSTANCE = instance
             } catch (e: SQLException) {
                 throw RuntimeException("Can't initialize DataSource.", e)
@@ -34,11 +27,11 @@ object DatabaseUtils {
             try {
                 INSTANCE?.connection.use { connection ->
                     if (connection == null) {
-                        throw RuntimeException("Can't create testing connection via DataSource.")
+                        throw RuntimeException("Couldn't create connection via DataSource. Instance is null")
                     }
                 }
             } catch (e: SQLException) {
-                throw RuntimeException("Can't create testing connection via DataSource.", e)
+                throw RuntimeException("Couldn't create testing connection via DataSource.", e)
             }
         }
     }
