@@ -1,0 +1,9 @@
+package model.domain
+
+enum class DialogState {
+    DIALOG,
+    TASK_CREATION_SET_DATE,
+    TASK_CREATION_SET_REPEAT,
+    TASK_CREATION_SET_TEXT,
+    TASK_CREATION_CONFIRMATION,
+}
