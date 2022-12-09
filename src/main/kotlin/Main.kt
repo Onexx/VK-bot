@@ -1,89 +1,42 @@
+import com.petersamokhin.vksdk.core.api.botslongpoll.VkBotsLongPollApi
 import com.petersamokhin.vksdk.core.client.VkApiClient
+import com.petersamokhin.vksdk.core.http.HttpClientConfig
 import com.petersamokhin.vksdk.core.model.VkSettings
-import com.petersamokhin.vksdk.core.model.objects.keyboard
 import com.petersamokhin.vksdk.http.VkOkHttpClient
+import controllers.CommonController
+import controllers.ResponseSender
+import controllers.TaskController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import model.domain.DialogState.DIALOG
-import model.domain.DialogState.TASK_CREATION_SET_TEXT
 import model.service.StateService
+import model.service.TaskService
 
 @ExperimentalCoroutinesApi
 fun main() {
     println("Server started")
+
+    val vkHttpClient = VkOkHttpClient(
+        HttpClientConfig(
+            readTimeout = 30_000,
+            connectTimeout = 30_000
+        )
+    )
+
     val groupId = System.getenv("GROUP_ID")?.toInt() ?: 0
     val accessToken = System.getenv("ACCESS_TOKEN") ?: ""
 
-    val vkHttpClient = VkOkHttpClient()
-
     val client = VkApiClient(groupId, accessToken, VkApiClient.Type.Community, VkSettings(vkHttpClient))
 
+    val responseSender = ResponseSender(client)
     val stateService = StateService()
+    val taskService = TaskService()
+    val taskController = TaskController(stateService, taskService, responseSender)
+    val commonController = CommonController(responseSender)
+    val router = Router(stateService, taskController, commonController)
 
     client.onMessage { messageEvent ->
-        println("mess: $messageEvent")
-        when (stateService.getState(messageEvent.message.peerId)) {
-            DIALOG -> runBlocking {
-                when (messageEvent.message.text) {
-                    "оставить состояние 1" -> client.sendMessage {
-                        message = Messages.getMessage("dialogStateNotChanged")
-                        peerId = messageEvent.message.peerId
-                        keyboard = keyboard(oneTime = true) {
-                            row {
-                                secondaryButton("оставить состояние 1")
-                                secondaryButton("изменить состояние 1")
-                            }
-                        }
-                    }.execute()
-
-                    "изменить состояние 1" -> {
-                        stateService.saveState(messageEvent.message.peerId, TASK_CREATION_SET_TEXT)
-                        client.sendMessage {
-                            message = Messages.getMessage("ChangedToSecondState")
-                            peerId = messageEvent.message.peerId
-                            keyboard = keyboard(oneTime = true) {
-                                row {
-                                    secondaryButton("оставить состояние 2")
-                                    secondaryButton("изменить состояние 2")
-                                }
-                            }
-                        }.execute()
-                    }
-                    else -> {}
-                }
-            }
-            TASK_CREATION_SET_TEXT -> runBlocking {
-                when (messageEvent.message.text) {
-                    "оставить состояние 2" -> client.sendMessage {
-                        message = Messages.getMessage("dialogStateNotChanged2")
-                        peerId = messageEvent.message.peerId
-                        keyboard = keyboard(oneTime = true) {
-                            row {
-                                secondaryButton("оставить состояние 2")
-                                secondaryButton("изменить состояние 2")
-                            }
-                        }
-                    }.execute()
-
-                    "изменить состояние 2" -> {
-                        stateService.saveState(messageEvent.message.peerId, DIALOG)
-                        client.sendMessage {
-                            message = Messages.getMessage("ChangedToFirstState")
-                            peerId = messageEvent.message.peerId
-                            keyboard = keyboard(oneTime = true) {
-                                row {
-                                    secondaryButton("оставить состояние 1")
-                                    secondaryButton("изменить состояние 1")
-                                }
-                            }
-                        }.execute()
-                    }
-                    else -> {}
-                }
-            }
-        }
-
+        router.handleMessage(messageEvent)
     }
 
-    runBlocking { client.startLongPolling() }
+    runBlocking { client.startLongPolling(settings = VkBotsLongPollApi.Settings(wait = 25, maxFails = 1)) }
 }

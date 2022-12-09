@@ -6,9 +6,9 @@ import model.domain.DialogState.DIALOG
 import model.repository.StateRepository
 import model.repository.impl.MariaDbStateRepositoryImpl
 
-class StateService {
+class StateService(
     private val stateRepository: StateRepository = MariaDbStateRepositoryImpl()
-
+) {
     fun getState(userId: Int): DialogState {
         var state = stateRepository.find(userId)
         if (state == null) {

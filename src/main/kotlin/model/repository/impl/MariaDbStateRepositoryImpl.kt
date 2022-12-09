@@ -9,8 +9,10 @@ import java.sql.ResultSetMetaData
 import java.sql.SQLException
 import javax.sql.DataSource
 
-class MariaDbStateRepositoryImpl : StateRepository {
+class MariaDbStateRepositoryImpl(
     private val dataSource: DataSource = DatabaseUtils.getDataSource()
+) : StateRepository {
+
     override fun save(userId: Int, state: DialogState) {
         try {
             dataSource.connection.use { connection ->
