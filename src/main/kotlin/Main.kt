@@ -3,13 +3,8 @@ import com.petersamokhin.vksdk.core.client.VkApiClient
 import com.petersamokhin.vksdk.core.http.HttpClientConfig
 import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.http.VkOkHttpClient
-import controllers.CommonController
-import controllers.ResponseSender
-import controllers.TaskController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import model.service.StateService
-import model.service.TaskService
 
 @ExperimentalCoroutinesApi
 fun main() {
@@ -27,15 +22,10 @@ fun main() {
 
     val client = VkApiClient(groupId, accessToken, VkApiClient.Type.Community, VkSettings(vkHttpClient))
 
-    val responseSender = ResponseSender(client)
-    val stateService = StateService()
-    val taskService = TaskService()
-    val taskController = TaskController(stateService, taskService, responseSender)
-    val commonController = CommonController(responseSender)
-    val router = Router(stateService, taskController, commonController)
+    val dependencies = Dependencies(client)
 
     client.onMessage { messageEvent ->
-        router.handleMessage(messageEvent)
+        dependencies.router.handleMessage(messageEvent)
     }
 
     runBlocking { client.startLongPolling(settings = VkBotsLongPollApi.Settings(wait = 25, maxFails = 1)) }
