@@ -1,20 +1,29 @@
 import com.petersamokhin.vksdk.core.api.botslongpoll.VkBotsLongPollApi
 import com.petersamokhin.vksdk.core.client.VkApiClient
-import com.petersamokhin.vksdk.core.http.HttpClientConfig
 import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.http.VkOkHttpClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.util.concurrent.TimeUnit
 
 @ExperimentalCoroutinesApi
 fun main() {
     println("Server started")
 
     val vkHttpClient = VkOkHttpClient(
-        HttpClientConfig(
-            readTimeout = 30_000,
-            connectTimeout = 30_000
-        )
+        OkHttpClient.Builder()
+            .readTimeout(30_000, TimeUnit.MILLISECONDS)
+            .connectTimeout(30_000, TimeUnit.MILLISECONDS)
+            .writeTimeout(30_000, TimeUnit.MILLISECONDS)
+            .pingInterval(1, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                val newRequest: Request = chain.request().newBuilder().build()
+
+                chain.proceed(newRequest)
+            }
+            .build()
     )
 
     val groupId = System.getenv("GROUP_ID")?.toInt() ?: 0
@@ -28,5 +37,5 @@ fun main() {
         dependencies.router.handleMessage(messageEvent)
     }
 
-    runBlocking { client.startLongPolling(settings = VkBotsLongPollApi.Settings(wait = 25, maxFails = 1)) }
+    runBlocking { client.startLongPolling(settings = VkBotsLongPollApi.Settings(wait = 25)) }
 }
