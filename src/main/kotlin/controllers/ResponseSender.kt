@@ -3,6 +3,8 @@ package controllers
 import com.petersamokhin.vksdk.core.client.VkApiClient
 import com.petersamokhin.vksdk.core.model.objects.keyboard
 import kotlinx.coroutines.runBlocking
+import model.domain.Task
+import model.domain.preview
 import util.Messages
 
 class ResponseSender(
@@ -72,8 +74,15 @@ class ResponseSender(
         }.execute()
     }
 
-    fun taskCreationConfirmation(userId: Int) {
-        taskCreationConfirmationState(userId, Messages.getMessage("TaskCreation.Confirmation"))
+    fun taskCreationConfirmation(userId: Int, taskInfo: Task?) {
+        if (taskInfo == null) {
+            taskCreationConfirmationState(userId, Messages.getMessage("TaskCreation.TaskPreviewNotFound"))
+        } else {
+            taskCreationConfirmationState(
+                userId,
+                Messages.getMessage("TaskCreation.Confirmation") + "\n" + taskInfo.preview()
+            )
+        }
     }
 
     fun taskCreationConfirmationRetry(userId: Int) {

@@ -35,6 +35,10 @@ class TaskService(
         return taskRepository.findTasksByAuthorId(userId)
     }
 
+    fun getUnfinishedTask(userId: Int): Task? {
+        return taskRepository.findUnfinishedTaskByAuthorId(userId)
+    }
+
     fun cancelTaskCreation(userId: Int) {
         taskRepository.removeUnfinishedTask(userId)
     }

@@ -76,7 +76,8 @@ class TaskController(
 
         stateService.saveState(userId, TASK_CREATION_CONFIRMATION)
         taskService.setText(userId, messageEvent.message.text)
-        responseSender.taskCreationConfirmation(userId)
+        val taskInfo = taskService.getUnfinishedTask(userId)
+        responseSender.taskCreationConfirmation(userId, taskInfo)
     }
 
     fun confirmation(messageEvent: MessageNew) {

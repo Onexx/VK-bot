@@ -152,21 +152,46 @@ class MariaDbTaskRepositoryImpl(
     private fun toTasksList(metaData: ResultSetMetaData, resultSet: ResultSet): List<Task> {
         val result = ArrayList<Task>()
         while (resultSet.next()) {
-            val task = Task()
-            for (i in 1..metaData.columnCount) {
-                when (metaData.getColumnName(i)) {
-                    "id" -> task.id = resultSet.getLong(i)
-                    "authorId" -> task.authorId = resultSet.getInt(i)
-                    "date" -> task.date = resultSet.getDate(i).toLocalDate()
-                    "repeats" -> task.repeat = Repeats.valueOf(resultSet.getString(i))
-                    "text" -> task.text = resultSet.getString(i)
-                    "creationFinished" -> task.creationFinished = resultSet.getBoolean(i)
-                    else -> {
-                    }
-                }
-            }
-            result.add(task)
+            result.add(toTask(metaData, resultSet)!!)
         }
         return result
+    }
+
+    override fun findUnfinishedTaskByAuthorId(authorId: Int): Task? {
+        try {
+            dataSource.connection.use { connection ->
+                connection.prepareStatement("SELECT * FROM Tasks WHERE authorId=? and creationFinished = false")
+                    .use { statement ->
+                        statement.setInt(1, authorId)
+                        return statement.executeQuery().use { resultSet ->
+                            toTask(statement.metaData, resultSet)
+                        }
+                    }
+            }
+        } catch (e: SQLException) {
+            System.err.println("Couldn't find tasks for user $authorId: $e")
+            return null
+        }
+    }
+
+    @Throws(SQLException::class)
+    private fun toTask(metaData: ResultSetMetaData, resultSet: ResultSet): Task? {
+        if (!resultSet.next()) {
+            return null
+        }
+        val task = Task()
+        for (i in 1..metaData.columnCount) {
+            when (metaData.getColumnName(i)) {
+                "id" -> task.id = resultSet.getLong(i)
+                "authorId" -> task.authorId = resultSet.getInt(i)
+                "date" -> task.date = resultSet.getDate(i).toLocalDate()
+                "repeats" -> task.repeat = Repeats.valueOf(resultSet.getString(i))
+                "text" -> task.text = resultSet.getString(i)
+                "creationFinished" -> task.creationFinished = resultSet.getBoolean(i)
+                else -> {
+                }
+            }
+        }
+        return task
     }
 }

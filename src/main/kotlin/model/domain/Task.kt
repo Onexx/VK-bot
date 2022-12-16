@@ -12,3 +12,7 @@ class Task : Serializable {
     var text: String = ""
     var creationFinished: Boolean = false
 }
+
+fun Task.preview(): String {
+    return "$date [$repeat] - \"$text\""
+}
