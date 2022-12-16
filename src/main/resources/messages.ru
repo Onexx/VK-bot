@@ -11,5 +11,7 @@ TaskCreation.RepeatState.MonthlyButton=Ежемесячно
 TaskCreation.RepeatState.YearlyButton=Ежегодно
 TaskCreation.setText=Установите текст задачи
 TaskCreation.Confirmation=Проверьте, что задача создана верно
+TaskCreation.ConfirmationRetry=Не удалось распознать ответ. Подтвердите, что задача создана верно
+TaskCreation.TaskPreviewNotFound=Не удалось создать задачу. Нажмите "Отмена"
 TaskCreatedSuccessfully=Задача создана успешно
 CancelOperation=Операция отменена
