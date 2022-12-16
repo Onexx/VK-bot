@@ -22,7 +22,7 @@ class MariaDbStateRepositoryImpl(
                     statement.setInt(1, userId)
                     statement.setString(2, state.name)
 
-                    if (statement.executeUpdate() != 1) {
+                    if (statement.executeUpdate() != 1 && statement.executeUpdate() != 2) {
                         System.err.println("Couldn't save state for user $userId: Update unsuccessful")
                     }
                 }
