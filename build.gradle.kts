@@ -4,7 +4,6 @@ plugins {
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.serialization") version "1.5.30"
     application
-    id("com.bmuschko.tomcat") version "2.7.0"
 }
 
 group = "me.onexx"
@@ -51,14 +50,12 @@ dependencies {
     implementation(kotlin("stdlib-jdk8", "1.5.30"))
 
     implementation("com.petersamokhin.vksdk:core:0.0.8")
-
     implementation("com.petersamokhin.vksdk:http-client-jvm-okhttp:0.0.8")
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
 
     implementation("org.mariadb.jdbc:mariadb-java-client:2.7.5")
-    tomcat("org.apache.tomcat.embed:tomcat-embed-core:10.1.2")
-    tomcat("org.apache.tomcat.embed:tomcat-embed-logging-juli:10.1.2")
 
-    testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.22")
 }
 
 tasks.test {
