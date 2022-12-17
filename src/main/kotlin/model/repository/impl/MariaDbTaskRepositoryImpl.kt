@@ -134,7 +134,7 @@ class MariaDbTaskRepositoryImpl(
     override fun findTasksByAuthorId(authorId: Int): List<Task> {
         try {
             dataSource.connection.use { connection ->
-                connection.prepareStatement("SELECT * FROM Tasks WHERE authorId=? and creationFinished = true")
+                connection.prepareStatement("SELECT * FROM Tasks WHERE authorId=? and creationFinished = true ORDER BY date ASC")
                     .use { statement ->
                         statement.setInt(1, authorId)
                         return statement.executeQuery().use { resultSet ->
@@ -152,7 +152,7 @@ class MariaDbTaskRepositoryImpl(
     private fun toTasksList(metaData: ResultSetMetaData, resultSet: ResultSet): List<Task> {
         val result = ArrayList<Task>()
         while (resultSet.next()) {
-            result.add(toTask(metaData, resultSet)!!)
+            result.add(toTask(metaData, resultSet))
         }
         return result
     }
@@ -163,8 +163,11 @@ class MariaDbTaskRepositoryImpl(
                 connection.prepareStatement("SELECT * FROM Tasks WHERE authorId=? and creationFinished = false")
                     .use { statement ->
                         statement.setInt(1, authorId)
-                        return statement.executeQuery().use { resultSet ->
-                            toTask(statement.metaData, resultSet)
+                        statement.executeQuery().use { resultSet ->
+                            if (!resultSet.next()) {
+                                return null
+                            }
+                            return toTask(statement.metaData, resultSet)
                         }
                     }
             }
@@ -175,10 +178,7 @@ class MariaDbTaskRepositoryImpl(
     }
 
     @Throws(SQLException::class)
-    private fun toTask(metaData: ResultSetMetaData, resultSet: ResultSet): Task? {
-        if (!resultSet.next()) {
-            return null
-        }
+    private fun toTask(metaData: ResultSetMetaData, resultSet: ResultSet): Task {
         val task = Task()
         for (i in 1..metaData.columnCount) {
             when (metaData.getColumnName(i)) {

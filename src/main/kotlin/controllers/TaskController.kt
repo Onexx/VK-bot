@@ -4,11 +4,13 @@ import com.petersamokhin.vksdk.core.model.event.MessageNew
 import model.domain.DialogState.*
 import model.domain.Repeats
 import model.domain.Repeats.*
+import model.domain.preview
 import model.service.StateService
 import model.service.TaskService
 import util.InputMessages
 import util.Parsers
 import java.util.*
+import java.util.stream.Collectors
 
 class TaskController(
     private val stateService: StateService,
@@ -21,6 +23,15 @@ class TaskController(
         stateService.saveState(userId, TASK_CREATION_SET_DATE)
         taskService.createNewTask(userId)
         responseSender.taskCreationSetDate(userId)
+    }
+
+    fun showAllTasks(messageEvent: MessageNew) {
+        val userId = messageEvent.message.peerId
+        val tasks = taskService.getAllTasks(userId).stream()
+            .map { task -> task.preview() }
+            .collect(Collectors.joining("\n"))
+
+        responseSender.showAllTasks(userId, tasks)
     }
 
     fun setDate(messageEvent: MessageNew) {
