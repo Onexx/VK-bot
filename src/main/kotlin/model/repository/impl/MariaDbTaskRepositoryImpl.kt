@@ -134,7 +134,7 @@ class MariaDbTaskRepositoryImpl(
     override fun findTasksByAuthorId(authorId: Int): List<Task> {
         try {
             dataSource.connection.use { connection ->
-                connection.prepareStatement("SELECT * FROM Tasks WHERE authorId=? and creationFinished = true")
+                connection.prepareStatement("SELECT * FROM Tasks WHERE authorId=? and creationFinished = true ORDER BY date ASC")
                     .use { statement ->
                         statement.setInt(1, authorId)
                         return statement.executeQuery().use { resultSet ->

@@ -114,6 +114,14 @@ class ResponseSender(
         baseState(userId, Messages.getMessage("UnknownMessage"))
     }
 
+    fun showAllTasks(userId: Int, tasks: String) {
+        if (tasks.isBlank()) {
+            baseState(userId, Messages.getMessage("NoTasks"))
+        } else {
+            baseState(userId, Messages.getMessage("AllTasksList") + "\n" + tasks)
+        }
+    }
+
     private fun baseState(userId: Int, messageToSend: String) = runBlocking {
         client.sendMessage {
             message = messageToSend
@@ -121,6 +129,9 @@ class ResponseSender(
             keyboard = keyboard {
                 row {
                     secondaryButton(Messages.getMessage("Buttons.CreateTask"))
+                }
+                row {
+                    secondaryButton(Messages.getMessage("Buttons.ShowAllTasks"))
                 }
             }
         }.execute()

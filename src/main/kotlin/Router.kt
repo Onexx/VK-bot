@@ -26,6 +26,7 @@ class Router(
     private fun messageDeterminer(messageEvent: MessageNew) {
         when (messageEvent.message.text.lowercase(Locale.getDefault())) {
             in InputMessages.getMessages("CreateTask") -> taskController.startTaskCreation(messageEvent)
+            in InputMessages.getMessages("ShowAllTasks") -> taskController.showAllTasks(messageEvent)
             else -> commonController.unknown(messageEvent)
         }
     }
