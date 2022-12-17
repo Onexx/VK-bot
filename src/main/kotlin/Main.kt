@@ -1,5 +1,6 @@
 import com.petersamokhin.vksdk.core.api.botslongpoll.VkBotsLongPollApi
 import com.petersamokhin.vksdk.core.client.VkApiClient
+import com.petersamokhin.vksdk.core.error.VkResponseException
 import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.http.VkOkHttpClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,30 +13,37 @@ import java.util.concurrent.TimeUnit
 fun main() {
     println("Server started")
 
-    val vkHttpClient = VkOkHttpClient(
-        OkHttpClient.Builder()
-            .readTimeout(30_000, TimeUnit.MILLISECONDS)
-            .connectTimeout(30_000, TimeUnit.MILLISECONDS)
-            .writeTimeout(30_000, TimeUnit.MILLISECONDS)
-            .pingInterval(1, TimeUnit.SECONDS)
-            .addInterceptor { chain ->
-                val newRequest: Request = chain.request().newBuilder().build()
-
-                chain.proceed(newRequest)
-            }
-            .build()
-    )
-
     val groupId = System.getenv("GROUP_ID")?.toInt() ?: 0
     val accessToken = System.getenv("ACCESS_TOKEN") ?: ""
 
-    val client = VkApiClient(groupId, accessToken, VkApiClient.Type.Community, VkSettings(vkHttpClient))
+    while (true) {
+        val vkHttpClient = VkOkHttpClient(
+            OkHttpClient.Builder()
+                .readTimeout(30_000, TimeUnit.MILLISECONDS)
+                .connectTimeout(30_000, TimeUnit.MILLISECONDS)
+                .writeTimeout(30_000, TimeUnit.MILLISECONDS)
+                .pingInterval(1, TimeUnit.SECONDS)
+                .addInterceptor { chain ->
+                    val newRequest: Request = chain.request().newBuilder().build()
 
-    val dependencies = Dependencies(client)
+                    chain.proceed(newRequest)
+                }
+                .build()
+        )
+        val client = VkApiClient(groupId, accessToken, VkApiClient.Type.Community, VkSettings(vkHttpClient))
 
-    client.onMessage { messageEvent ->
-        dependencies.router.handleMessage(messageEvent)
+        val dependencies = Dependencies(client)
+
+        client.onMessage { messageEvent ->
+            dependencies.router.handleMessage(messageEvent)
+        }
+        try {
+            runBlocking {
+                client.startLongPolling(settings = VkBotsLongPollApi.Settings(wait = 25, maxFails = 0))
+            }
+        } catch (e: VkResponseException) {
+            System.err.println("longPolling failed with exception: $e")
+            System.err.println("Restarting server")
+        }
     }
-
-    runBlocking { client.startLongPolling(settings = VkBotsLongPollApi.Settings(wait = 25)) }
 }
