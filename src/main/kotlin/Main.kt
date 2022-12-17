@@ -1,6 +1,5 @@
 import com.petersamokhin.vksdk.core.api.botslongpoll.VkBotsLongPollApi
 import com.petersamokhin.vksdk.core.client.VkApiClient
-import com.petersamokhin.vksdk.core.error.VkResponseException
 import com.petersamokhin.vksdk.core.model.VkSettings
 import com.petersamokhin.vksdk.http.VkOkHttpClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,13 +36,9 @@ fun main() {
         client.onMessage { messageEvent ->
             dependencies.router.handleMessage(messageEvent)
         }
-        try {
-            runBlocking {
-                client.startLongPolling(settings = VkBotsLongPollApi.Settings(wait = 25, maxFails = 0))
-            }
-        } catch (e: VkResponseException) {
-            System.err.println("longPolling failed with exception: $e")
-            System.err.println("Restarting server")
+        runBlocking {
+            client.startLongPolling(settings = VkBotsLongPollApi.Settings(wait = 25, maxFails = 1))
         }
+        System.err.println("longPolling exited with exception. Restarting server")
     }
 }
