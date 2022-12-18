@@ -159,7 +159,7 @@ class ResponseSender(
             val sundayString = DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(sunday)
             baseState(
                 userId,
-                Messages.getMessage("WeeklyTasksList") + mondayString + " - " + sundayString + "\n" + tasks
+                Messages.getMessage("WeeklyTasksList") + " " + mondayString + " - " + sundayString + "\n" + tasks
             )
         }
     }

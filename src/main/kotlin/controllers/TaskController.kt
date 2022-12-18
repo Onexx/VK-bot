@@ -58,9 +58,11 @@ class TaskController(
         var tasksString = ""
         val tasks = taskService.getAllTasks(userId)
         for (i in 1..7) {
-            val date = LocalDate.now().plusDays(i.toLong())
+            val date = LocalDate.now().minusDays(LocalDate.now().dayOfWeek.value.toLong()).plusDays(i.toLong())
             val tasksForDay = tasks.filter { taskDateMatchesDate(it, date) }.sortedBy { it.time }
-            tasksString += "\n" + DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(date)
+            tasksString += "\n"
+            tasksString += DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(date)
+            tasksString += "\n"
             tasksString += tasksForDay.stream()
                 .map { task -> task.previewDaily() }
                 .collect(Collectors.joining("\n"))
