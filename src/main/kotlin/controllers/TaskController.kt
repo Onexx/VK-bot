@@ -61,6 +61,7 @@ class TaskController(
             val date = LocalDate.now().minusDays(LocalDate.now().dayOfWeek.value.toLong()).plusDays(i.toLong())
             val tasksForDay = tasks.filter { taskDateMatchesDate(it, date) }.sortedBy { it.time }
             tasksString += "\n"
+            tasksString += "\n"
             tasksString += DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(date)
             tasksString += "\n"
             tasksString += tasksForDay.stream()
