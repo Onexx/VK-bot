@@ -1,7 +1,7 @@
 DateFormat.1=dd.MM.yyyy
 DateFormat.2=dd MM yyyy
-TimeFormat.1=hh:mm
-TimeFormat.2=hh mm
+TimeFormat.1=HH:mm
+TimeFormat.2=HH mm
 CreateTask.1=создать задачу
 CreateTask.2=новая задача
 CreateTask.3=добавить задачу
