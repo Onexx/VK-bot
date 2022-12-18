@@ -53,6 +53,7 @@ dependencies {
     implementation("com.petersamokhin.vksdk:http-client-jvm-okhttp:0.0.8")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
 
+    implementation("com.google.guava:guava:31.1-jre")
     implementation("org.mariadb.jdbc:mariadb-java-client:2.7.5")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test:1.7.22")
