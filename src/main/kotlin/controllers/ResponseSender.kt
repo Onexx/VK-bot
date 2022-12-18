@@ -44,6 +44,9 @@ class ResponseSender(
             peerId = userId
             keyboard = keyboard {
                 row {
+                    secondaryButton(Messages.getMessage("TaskCreation.RepeatState.NoRepeatsButton"))
+                }
+                row {
                     secondaryButton(Messages.getMessage("TaskCreation.RepeatState.DailyButton"))
                 }
                 row {

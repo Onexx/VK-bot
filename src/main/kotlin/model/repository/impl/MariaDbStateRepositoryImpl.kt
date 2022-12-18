@@ -22,7 +22,8 @@ class MariaDbStateRepositoryImpl(
                     statement.setInt(1, userId)
                     statement.setString(2, state.name)
 
-                    if (statement.executeUpdate() != 1 && statement.executeUpdate() != 2) {
+                    val changesCount = statement.executeUpdate()
+                    if (changesCount != 1 && changesCount != 2) {
                         System.err.println("Couldn't save state for user $userId: Update unsuccessful")
                     }
                 }

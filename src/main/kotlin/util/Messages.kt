@@ -11,13 +11,13 @@ object Messages {
         try {
             val resourceStream: InputStream? = this.javaClass.classLoader.getResourceAsStream("messages.ru")
             if (resourceStream == null) {
-                System.err.println("Couldn't load messages")
+                System.err.println("Couldn't load messages: resourceStream is null")
             }
             resourceStream?.use {
                 prop.load(it.bufferedReader(Charsets.UTF_8))
             }
         } catch (e: FileNotFoundException) {
-            System.err.println("Couldn't load config'")
+            System.err.println("Couldn't load messages: $e")
         }
     }
 

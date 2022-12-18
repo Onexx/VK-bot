@@ -1,8 +1,10 @@
+DateFormat=dd.MM.yyyy
 CreateTask.1=создать задачу
 CreateTask.2=новая задача
 CreateTask.3=добавить задачу
 NoRepeats.1=без повторов
-NoRepeats.2=не повторять
+NoRepeats.2=без повтора
+NoRepeats.3=не повторять
 RepeatDaily.1=ежедневно
 RepeatDaily.2=каждый день
 RepeatDaily.3=раз в день
