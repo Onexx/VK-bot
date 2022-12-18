@@ -1,5 +1,7 @@
 Buttons.Cancel=Отмена
 Buttons.CreateTask=Создать задачу
+Buttons.ShowDailyTasks=Задачи на сегодня
+Buttons.ShowWeeklyTasks=Задачи на текущую неделю
 Buttons.ShowAllTasks=Все задачи
 Buttons.Confirm=Подтвердить
 TaskCreation.SetDate=Установите дату для задачи в формате дд.мм.гггг

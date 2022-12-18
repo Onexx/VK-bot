@@ -4,13 +4,16 @@ import com.petersamokhin.vksdk.core.model.event.MessageNew
 import model.domain.DialogState.*
 import model.domain.Repeats
 import model.domain.Repeats.*
+import model.domain.Task
 import model.domain.preview
 import model.service.StateService
 import model.service.TaskService
 import util.InputMessages
 import util.Parsers
+import java.time.LocalDate
 import java.util.*
 import java.util.stream.Collectors
+import kotlin.collections.ArrayList
 
 class TaskController(
     private val stateService: StateService,
@@ -23,6 +26,47 @@ class TaskController(
         stateService.saveState(userId, TASK_CREATION_SET_DATE)
         taskService.createNewTask(userId)
         responseSender.taskCreationSetDate(userId)
+    }
+
+    fun showDailyTasks(messageEvent: MessageNew) {
+        val userId = messageEvent.message.peerId
+        val tasks = taskService.getAllTasks(userId)
+            .filter { taskDateMatchesDate(it, LocalDate.now()) }
+            .sortedBy { it.time }
+
+        val tasksString = tasks.stream()
+            .map { task -> task.preview() }
+            .collect(Collectors.joining("\n"))
+
+        responseSender.showAllTasks(userId, tasksString)
+    }
+
+    private fun taskDateMatchesDate(task: Task, date: LocalDate): Boolean {
+        return when (task.repeat) {
+            NO_REPEATS -> task.date?.equals(date) ?: false
+            DAILY -> true
+            WEEKLY -> task.date?.dayOfWeek == date.dayOfWeek
+            MONTHLY -> task.date?.dayOfMonth == date.dayOfMonth
+            YEARLY -> task.date?.month == date.month && task.date?.dayOfMonth == date.dayOfMonth
+        }
+    }
+
+
+    fun showWeeklyTasks(messageEvent: MessageNew) {
+        val userId = messageEvent.message.peerId
+        val conditions = ArrayList<(Task) -> Boolean>()
+        for (i in 1..7) {
+            conditions.add { task -> taskDateMatchesDate(task, LocalDate.now().plusDays(i.toLong())) }
+        }
+        val tasks = taskService.getAllTasks(userId)
+            .filter { task -> conditions.any { condition -> condition(task) } }
+            .sortedWith(compareBy({ it.date }, { it.time }))
+
+        val tasksString = tasks.stream()
+            .map { task -> task.preview() }
+            .collect(Collectors.joining("\n"))
+
+        responseSender.showAllTasks(userId, tasksString)
     }
 
     fun showAllTasks(messageEvent: MessageNew) {

@@ -154,6 +154,12 @@ class ResponseSender(
                     secondaryButton(Messages.getMessage("Buttons.CreateTask"))
                 }
                 row {
+                    secondaryButton(Messages.getMessage("Buttons.ShowDailyTasks"))
+                }
+                row {
+                    secondaryButton(Messages.getMessage("Buttons.ShowWeeklyTasks"))
+                }
+                row {
                     secondaryButton(Messages.getMessage("Buttons.ShowAllTasks"))
                 }
             }
