@@ -1,9 +1,11 @@
-TaskCreation.SetDate=Установите дату для задачи в формате дд.мм.гггг
 Buttons.Cancel=Отмена
 Buttons.CreateTask=Создать задачу
 Buttons.ShowAllTasks=Все задачи
 Buttons.Confirm=Подтвердить
+TaskCreation.SetDate=Установите дату для задачи в формате дд.мм.гггг
 TaskCreation.SetDateRetry=Не удалось распознать дату. Попробуйте снова в формате дд.мм.гггг
+TaskCreation.SetTime=Установите время для задачи в формате чч:мм
+TaskCreation.SetTimeRetry=Не удалось распознать время. Попробуйте снова в формате чч:мм
 TaskCreation.SetRepeatRetry=Не удалось распознать повторы. Попробуйте снова
 TaskCreation.SetRepeat=Установите частоту повтора задачи
 TaskCreation.RepeatState.NoRepeatsButton=Без повтора
@@ -25,3 +27,4 @@ TaskInfo.Repeat.YEARLY=Ежегодно
 NoTasks=Задачи отсутствуют
 AllTasksList=Список всех задач:
 PreviewDateFormat=dd.MM.yyyy
+PreviewTimeFormat=hh:mm

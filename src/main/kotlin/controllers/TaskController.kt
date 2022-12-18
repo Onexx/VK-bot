@@ -43,11 +43,28 @@ class TaskController(
         val userId = messageEvent.message.peerId
         val date = Parsers.parseDate(messageEvent.message.text.lowercase(Locale.getDefault()))
         if (date != null) {
-            stateService.saveState(userId, TASK_CREATION_SET_REPEAT)
+            stateService.saveState(userId, TASK_CREATION_SET_TIME)
             taskService.setDate(userId, date)
-            responseSender.taskCreationSetRepeat(userId)
+            responseSender.taskCreationSetTime(userId)
         } else {
             responseSender.taskCreationSetDateRetry(userId)
+        }
+    }
+
+    fun setTime(messageEvent: MessageNew) {
+        if (messageEvent.message.text.lowercase(Locale.getDefault()) in InputMessages.getMessages("Cancel")) {
+            cancel(messageEvent)
+            return
+        }
+
+        val userId = messageEvent.message.peerId
+        val time = Parsers.parseTime(messageEvent.message.text.lowercase(Locale.getDefault()))
+        if (time != null) {
+            stateService.saveState(userId, TASK_CREATION_SET_REPEAT)
+            taskService.setTime(userId, time)
+            responseSender.taskCreationSetRepeat(userId)
+        } else {
+            responseSender.taskCreationSetTimeRetry(userId)
         }
     }
 

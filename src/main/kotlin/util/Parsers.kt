@@ -1,6 +1,7 @@
 package util
 
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.*
@@ -17,6 +18,24 @@ object Parsers {
         for (dateFormat in InputMessages.getMessages("DateFormat")) {
             try {
                 date = LocalDate.parse(formattedText, DateTimeFormatter.ofPattern(dateFormat))
+            } catch (e: DateTimeParseException) {
+                //ignored
+            }
+        }
+        return date
+    }
+
+    fun parseTime(text: String): LocalTime? {
+        val formattedText = text.lowercase(Locale.getDefault())
+        var date: LocalTime? = null
+        try {
+            date = LocalTime.parse(formattedText)
+        } catch (e: DateTimeParseException) {
+            //ignored
+        }
+        for (dateFormat in InputMessages.getMessages("TimeFormat")) {
+            try {
+                date = LocalTime.parse(formattedText, DateTimeFormatter.ofPattern(dateFormat))
             } catch (e: DateTimeParseException) {
                 //ignored
             }

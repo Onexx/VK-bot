@@ -34,6 +34,7 @@ class Router(
     private fun stateDeterminer(state: DialogState, messageEvent: MessageNew) {
         when (state) {
             TASK_CREATION_SET_DATE -> taskController.setDate(messageEvent)
+            TASK_CREATION_SET_TIME -> taskController.setTime(messageEvent)
             TASK_CREATION_SET_REPEAT -> taskController.setRepeat(messageEvent)
             TASK_CREATION_SET_TEXT -> taskController.setText(messageEvent)
             TASK_CREATION_CONFIRMATION -> taskController.confirmation(messageEvent)
