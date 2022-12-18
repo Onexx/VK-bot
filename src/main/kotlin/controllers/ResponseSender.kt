@@ -6,6 +6,8 @@ import kotlinx.coroutines.runBlocking
 import model.domain.Task
 import model.domain.preview
 import util.Messages
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ResponseSender(
     private val client: VkApiClient
@@ -137,6 +139,31 @@ class ResponseSender(
         baseState(userId, Messages.getMessage("UnknownMessage"))
     }
 
+    fun showDailyTasks(userId: Int, tasks: String) {
+        if (tasks.isBlank()) {
+            baseState(userId, Messages.getMessage("NoTasks"))
+        } else {
+            val today = DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(LocalDate.now())
+            baseState(userId, Messages.getMessage("DailyTasksList") + " (" + today + "):\n" + tasks)
+        }
+
+    }
+
+    fun showWeeklyTasks(userId: Int, tasks: String) {
+        if (tasks.isBlank()) {
+            baseState(userId, Messages.getMessage("NoTasks"))
+        } else {
+            val monday = LocalDate.now().minusDays(LocalDate.now().dayOfWeek.value.toLong()).plusDays(1)
+            val sunday = monday.plusDays(6)
+            val mondayString = DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(monday)
+            val sundayString = DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(sunday)
+            baseState(
+                userId,
+                Messages.getMessage("WeeklyTasksList") + " " + mondayString + " - " + sundayString + "\n" + tasks
+            )
+        }
+    }
+
     fun showAllTasks(userId: Int, tasks: String) {
         if (tasks.isBlank()) {
             baseState(userId, Messages.getMessage("NoTasks"))
@@ -152,6 +179,12 @@ class ResponseSender(
             keyboard = keyboard {
                 row {
                     secondaryButton(Messages.getMessage("Buttons.CreateTask"))
+                }
+                row {
+                    secondaryButton(Messages.getMessage("Buttons.ShowDailyTasks"))
+                }
+                row {
+                    secondaryButton(Messages.getMessage("Buttons.ShowWeeklyTasks"))
                 }
                 row {
                     secondaryButton(Messages.getMessage("Buttons.ShowAllTasks"))

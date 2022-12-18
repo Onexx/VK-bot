@@ -4,11 +4,16 @@ import com.petersamokhin.vksdk.core.model.event.MessageNew
 import model.domain.DialogState.*
 import model.domain.Repeats
 import model.domain.Repeats.*
+import model.domain.Task
 import model.domain.preview
+import model.domain.previewDaily
 import model.service.StateService
 import model.service.TaskService
 import util.InputMessages
+import util.Messages
 import util.Parsers
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Collectors
 
@@ -23,6 +28,50 @@ class TaskController(
         stateService.saveState(userId, TASK_CREATION_SET_DATE)
         taskService.createNewTask(userId)
         responseSender.taskCreationSetDate(userId)
+    }
+
+    private fun taskDateMatchesDate(task: Task, date: LocalDate): Boolean {
+        return when (task.repeat) {
+            NO_REPEATS -> task.date?.equals(date) ?: false
+            DAILY -> true
+            WEEKLY -> task.date?.dayOfWeek == date.dayOfWeek
+            MONTHLY -> task.date?.dayOfMonth == date.dayOfMonth
+            YEARLY -> task.date?.month == date.month && task.date?.dayOfMonth == date.dayOfMonth
+        }
+    }
+
+    fun showDailyTasks(messageEvent: MessageNew) {
+        val userId = messageEvent.message.peerId
+        val tasks = taskService.getAllTasks(userId)
+            .filter { taskDateMatchesDate(it, LocalDate.now()) }
+            .sortedBy { it.time }
+
+        val tasksString = tasks.stream()
+            .map { task -> task.previewDaily() }
+            .collect(Collectors.joining("\n"))
+
+        responseSender.showDailyTasks(userId, tasksString)
+    }
+
+    fun showWeeklyTasks(messageEvent: MessageNew) {
+        val userId = messageEvent.message.peerId
+        var tasksString = ""
+        val tasks = taskService.getAllTasks(userId)
+        for (i in 1..7) {
+            val date = LocalDate.now().minusDays(LocalDate.now().dayOfWeek.value.toLong()).plusDays(i.toLong())
+            val tasksForDay = tasks.filter { taskDateMatchesDate(it, date) }.sortedBy { it.time }
+            if (tasksForDay.isNotEmpty()) {
+                tasksString += "\n"
+                tasksString += "\n"
+                tasksString += DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(date)
+                tasksString += "\n"
+                tasksString += tasksForDay.stream()
+                    .map { task -> task.previewDaily() }
+                    .collect(Collectors.joining("\n"))
+            }
+        }
+
+        responseSender.showWeeklyTasks(userId, tasksString)
     }
 
     fun showAllTasks(messageEvent: MessageNew) {

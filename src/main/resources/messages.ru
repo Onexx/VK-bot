@@ -1,5 +1,7 @@
 Buttons.Cancel=Отмена
 Buttons.CreateTask=Создать задачу
+Buttons.ShowDailyTasks=Задачи на сегодня
+Buttons.ShowWeeklyTasks=Задачи на текущую неделю
 Buttons.ShowAllTasks=Все задачи
 Buttons.Confirm=Подтвердить
 TaskCreation.SetDate=Установите дату для задачи в формате дд.мм.гггг
@@ -25,6 +27,8 @@ TaskInfo.Repeat.WEEKLY=Еженедельно
 TaskInfo.Repeat.MONTHLY=Ежемесячно
 TaskInfo.Repeat.YEARLY=Ежегодно
 NoTasks=Задачи отсутствуют
+DailyTasksList=Список задач на сегодня
+WeeklyTasksList=Список задач на неделю
 AllTasksList=Список всех задач:
 PreviewDateFormat=dd.MM.yyyy
 PreviewTimeFormat=HH:mm
