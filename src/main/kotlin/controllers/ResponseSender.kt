@@ -30,6 +30,26 @@ class ResponseSender(
         }.execute()
     }
 
+    fun taskCreationSetTime(userId: Int) {
+        taskCreationTimeState(userId, Messages.getMessage("TaskCreation.SetTime"))
+    }
+
+    fun taskCreationSetTimeRetry(userId: Int) {
+        taskCreationTimeState(userId, Messages.getMessage("TaskCreation.SetTimeRetry"))
+    }
+
+    private fun taskCreationTimeState(userId: Int, messageToSend: String) = runBlocking {
+        client.sendMessage {
+            message = messageToSend
+            peerId = userId
+            keyboard = keyboard {
+                row {
+                    secondaryButton(Messages.getMessage("Buttons.Cancel"))
+                }
+            }
+        }.execute()
+    }
+
     fun taskCreationSetRepeat(userId: Int) {
         taskCreationRepeatState(userId, Messages.getMessage("TaskCreation.SetRepeat"))
     }

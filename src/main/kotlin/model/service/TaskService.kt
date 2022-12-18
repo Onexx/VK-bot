@@ -8,6 +8,7 @@ import model.domain.Task
 import model.repository.TaskRepository
 import model.repository.impl.MariaDbTaskRepositoryImpl
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.concurrent.TimeUnit
 
 class TaskService(
@@ -30,12 +31,16 @@ class TaskService(
         taskRepository.setDate(userId, date)
     }
 
-    fun setText(userId: Int, text: String) {
-        taskRepository.setText(userId, text)
+    fun setTime(userId: Int, time: LocalTime) {
+        taskRepository.setTime(userId, time)
     }
 
     fun setRepeat(userId: Int, repeat: Repeats) {
         taskRepository.setRepeat(userId, repeat)
+    }
+
+    fun setText(userId: Int, text: String) {
+        taskRepository.setText(userId, text)
     }
 
     fun confirmTaskCreation(userId: Int) {

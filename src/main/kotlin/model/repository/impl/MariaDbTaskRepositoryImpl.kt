@@ -6,6 +6,7 @@ import model.domain.Task
 import model.repository.TaskRepository
 import java.sql.*
 import java.time.LocalDate
+import java.time.LocalTime
 import javax.sql.DataSource
 
 class MariaDbTaskRepositoryImpl(
@@ -56,22 +57,22 @@ class MariaDbTaskRepositoryImpl(
         }
     }
 
-    override fun setText(userId: Int, text: String) {
+    override fun setTime(userId: Int, time: LocalTime) {
         try {
             dataSource.connection.use { connection ->
                 connection.prepareStatement(
-                    "UPDATE `Tasks` SET `text` = ? WHERE authorId = ? and creationFinished = false"
+                    "UPDATE `Tasks` SET `time` = ? WHERE authorId = ? and creationFinished = false"
                 ).use { statement ->
-                    statement.setString(1, text)
+                    statement.setTime(1, Time.valueOf(time))
                     statement.setInt(2, userId)
 
                     if (statement.executeUpdate() != 1) {
-                        System.err.println("Couldn't update text for user $userId: Update unsuccessful")
+                        System.err.println("Couldn't update time for user $userId: Update unsuccessful")
                     }
                 }
             }
         } catch (e: SQLException) {
-            System.err.println("Couldn't update text for user $userId: $e")
+            System.err.println("Couldn't update time for user $userId: $e")
         }
     }
 
@@ -91,6 +92,25 @@ class MariaDbTaskRepositoryImpl(
             }
         } catch (e: SQLException) {
             System.err.println("Couldn't update repeat for user $userId: $e")
+        }
+    }
+
+    override fun setText(userId: Int, text: String) {
+        try {
+            dataSource.connection.use { connection ->
+                connection.prepareStatement(
+                    "UPDATE `Tasks` SET `text` = ? WHERE authorId = ? and creationFinished = false"
+                ).use { statement ->
+                    statement.setString(1, text)
+                    statement.setInt(2, userId)
+
+                    if (statement.executeUpdate() != 1) {
+                        System.err.println("Couldn't update text for user $userId: Update unsuccessful")
+                    }
+                }
+            }
+        } catch (e: SQLException) {
+            System.err.println("Couldn't update text for user $userId: $e")
         }
     }
 
@@ -134,7 +154,7 @@ class MariaDbTaskRepositoryImpl(
     override fun findTasksByAuthorId(authorId: Int): List<Task> {
         try {
             dataSource.connection.use { connection ->
-                connection.prepareStatement("SELECT * FROM Tasks WHERE authorId=? and creationFinished = true ORDER BY date ASC")
+                connection.prepareStatement("SELECT * FROM Tasks WHERE authorId=? and creationFinished = true ORDER BY date, time")
                     .use { statement ->
                         statement.setInt(1, authorId)
                         return statement.executeQuery().use { resultSet ->
@@ -185,6 +205,7 @@ class MariaDbTaskRepositoryImpl(
                 "id" -> task.id = resultSet.getLong(i)
                 "authorId" -> task.authorId = resultSet.getInt(i)
                 "date" -> task.date = resultSet.getDate(i).toLocalDate()
+                "time" -> task.time = resultSet.getTime(i).toLocalTime()
                 "repeats" -> task.repeat = Repeats.valueOf(resultSet.getString(i))
                 "text" -> task.text = resultSet.getString(i)
                 "creationFinished" -> task.creationFinished = resultSet.getBoolean(i)
