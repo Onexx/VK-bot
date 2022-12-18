@@ -6,14 +6,16 @@ import model.domain.Repeats
 import model.domain.Repeats.*
 import model.domain.Task
 import model.domain.preview
+import model.domain.previewDaily
 import model.service.StateService
 import model.service.TaskService
 import util.InputMessages
+import util.Messages
 import util.Parsers
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Collectors
-import kotlin.collections.ArrayList
 
 class TaskController(
     private val stateService: StateService,
@@ -28,19 +30,6 @@ class TaskController(
         responseSender.taskCreationSetDate(userId)
     }
 
-    fun showDailyTasks(messageEvent: MessageNew) {
-        val userId = messageEvent.message.peerId
-        val tasks = taskService.getAllTasks(userId)
-            .filter { taskDateMatchesDate(it, LocalDate.now()) }
-            .sortedBy { it.time }
-
-        val tasksString = tasks.stream()
-            .map { task -> task.preview() }
-            .collect(Collectors.joining("\n"))
-
-        responseSender.showAllTasks(userId, tasksString)
-    }
-
     private fun taskDateMatchesDate(task: Task, date: LocalDate): Boolean {
         return when (task.repeat) {
             NO_REPEATS -> task.date?.equals(date) ?: false
@@ -51,22 +40,33 @@ class TaskController(
         }
     }
 
+    fun showDailyTasks(messageEvent: MessageNew) {
+        val userId = messageEvent.message.peerId
+        val tasks = taskService.getAllTasks(userId)
+            .filter { taskDateMatchesDate(it, LocalDate.now()) }
+            .sortedBy { it.time }
+
+        val tasksString = tasks.stream()
+            .map { task -> task.previewDaily() }
+            .collect(Collectors.joining("\n"))
+
+        responseSender.showDailyTasks(userId, tasksString)
+    }
 
     fun showWeeklyTasks(messageEvent: MessageNew) {
         val userId = messageEvent.message.peerId
-        val conditions = ArrayList<(Task) -> Boolean>()
-        for (i in 1..7) {
-            conditions.add { task -> taskDateMatchesDate(task, LocalDate.now().plusDays(i.toLong())) }
-        }
+        var tasksString = ""
         val tasks = taskService.getAllTasks(userId)
-            .filter { task -> conditions.any { condition -> condition(task) } }
-            .sortedWith(compareBy({ it.date }, { it.time }))
+        for (i in 1..7) {
+            val date = LocalDate.now().plusDays(i.toLong())
+            val tasksForDay = tasks.filter { taskDateMatchesDate(it, date) }.sortedBy { it.time }
+            tasksString += "\n" + DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(date)
+            tasksString += tasksForDay.stream()
+                .map { task -> task.previewDaily() }
+                .collect(Collectors.joining("\n"))
+        }
 
-        val tasksString = tasks.stream()
-            .map { task -> task.preview() }
-            .collect(Collectors.joining("\n"))
-
-        responseSender.showAllTasks(userId, tasksString)
+        responseSender.showWeeklyTasks(userId, tasksString)
     }
 
     fun showAllTasks(messageEvent: MessageNew) {

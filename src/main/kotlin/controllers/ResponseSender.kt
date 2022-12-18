@@ -6,6 +6,8 @@ import kotlinx.coroutines.runBlocking
 import model.domain.Task
 import model.domain.preview
 import util.Messages
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ResponseSender(
     private val client: VkApiClient
@@ -135,6 +137,31 @@ class ResponseSender(
 
     fun unknownMessage(userId: Int) {
         baseState(userId, Messages.getMessage("UnknownMessage"))
+    }
+
+    fun showDailyTasks(userId: Int, tasks: String) {
+        if (tasks.isBlank()) {
+            baseState(userId, Messages.getMessage("NoTasks"))
+        } else {
+            val today = DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(LocalDate.now())
+            baseState(userId, Messages.getMessage("DailyTasksList") + " (" + today + "):\n" + tasks)
+        }
+
+    }
+
+    fun showWeeklyTasks(userId: Int, tasks: String) {
+        if (tasks.isBlank()) {
+            baseState(userId, Messages.getMessage("NoTasks"))
+        } else {
+            val monday = LocalDate.now().minusDays(LocalDate.now().dayOfWeek.value.toLong())
+            val sunday = monday.plusDays(7)
+            val mondayString = DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(monday)
+            val sundayString = DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(sunday)
+            baseState(
+                userId,
+                Messages.getMessage("WeeklyTasksList") + mondayString + " - " + sundayString + "\n" + tasks
+            )
+        }
     }
 
     fun showAllTasks(userId: Int, tasks: String) {
