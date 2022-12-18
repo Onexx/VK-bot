@@ -6,6 +6,7 @@ Buttons.Confirm=Подтвердить
 TaskCreation.SetDateRetry=Не удалось распознать дату. Попробуйте снова в формате дд.мм.гггг
 TaskCreation.SetRepeatRetry=Не удалось распознать повторы. Попробуйте снова
 TaskCreation.SetRepeat=Установите частоту повтора задачи
+TaskCreation.RepeatState.NoRepeatsButton=Без повтора
 TaskCreation.RepeatState.DailyButton=Ежедневно
 TaskCreation.RepeatState.WeeklyButton=Еженедельно
 TaskCreation.RepeatState.MonthlyButton=Ежемесячно
