@@ -4,6 +4,7 @@ import model.domain.Repeats.NO_REPEATS
 import util.Messages
 import java.io.Serializable
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class Task : Serializable {
     var id: Long = 0
@@ -15,5 +16,7 @@ class Task : Serializable {
 }
 
 fun Task.preview(): String {
-    return "$date [${Messages.getMessage("TaskInfo.Repeat.${repeat.name}")}] - \"$text\""
+    return "${
+        DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(date)
+    } [${Messages.getMessage("TaskInfo.Repeat.${repeat.name}")}] - \"$text\""
 }

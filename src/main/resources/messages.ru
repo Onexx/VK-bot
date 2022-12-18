@@ -24,3 +24,4 @@ TaskInfo.Repeat.MONTHLY=Ежемесячно
 TaskInfo.Repeat.YEARLY=Ежегодно
 NoTasks=Задачи отсутствуют
 AllTasksList=Список всех задач:
+PreviewDateFormat=dd.MM.yyyy
