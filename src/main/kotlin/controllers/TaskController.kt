@@ -60,13 +60,15 @@ class TaskController(
         for (i in 1..7) {
             val date = LocalDate.now().minusDays(LocalDate.now().dayOfWeek.value.toLong()).plusDays(i.toLong())
             val tasksForDay = tasks.filter { taskDateMatchesDate(it, date) }.sortedBy { it.time }
-            tasksString += "\n"
-            tasksString += "\n"
-            tasksString += DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(date)
-            tasksString += "\n"
-            tasksString += tasksForDay.stream()
-                .map { task -> task.previewDaily() }
-                .collect(Collectors.joining("\n"))
+            if (tasksForDay.isNotEmpty()) {
+                tasksString += "\n"
+                tasksString += "\n"
+                tasksString += DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(date)
+                tasksString += "\n"
+                tasksString += tasksForDay.stream()
+                    .map { task -> task.previewDaily() }
+                    .collect(Collectors.joining("\n"))
+            }
         }
 
         responseSender.showWeeklyTasks(userId, tasksString)
