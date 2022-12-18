@@ -154,7 +154,7 @@ class ResponseSender(
             baseState(userId, Messages.getMessage("NoTasks"))
         } else {
             val monday = LocalDate.now().minusDays(LocalDate.now().dayOfWeek.value.toLong()).plusDays(1)
-            val sunday = monday.plusDays(7)
+            val sunday = monday.plusDays(6)
             val mondayString = DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(monday)
             val sundayString = DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(sunday)
             baseState(
