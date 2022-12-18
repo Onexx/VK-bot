@@ -36,7 +36,6 @@ class TaskController(
 
     fun setDate(messageEvent: MessageNew) {
         if (messageEvent.message.text.lowercase(Locale.getDefault()) in InputMessages.getMessages("Cancel")) {
-            println("cancel")
             cancel(messageEvent)
             return
         }

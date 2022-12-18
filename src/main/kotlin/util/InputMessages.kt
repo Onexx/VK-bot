@@ -11,13 +11,13 @@ object InputMessages {
         try {
             val resourceStream: InputStream? = this.javaClass.classLoader.getResourceAsStream("inputs.ru")
             if (resourceStream == null) {
-                System.err.println("Couldn't load messages")
+                System.err.println("Couldn't load inputs: resourceStream is null")
             }
             resourceStream?.use {
                 prop.load(it.bufferedReader(Charsets.UTF_8))
             }
         } catch (e: FileNotFoundException) {
-            System.err.println("Couldn't load config'")
+            System.err.println("Couldn't load inputs: $e")
         }
     }
 
