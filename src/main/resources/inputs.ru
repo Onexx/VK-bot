@@ -1,3 +1,4 @@
+DateFormat=dd.MM.yyyy
 CreateTask.1=создать задачу
 CreateTask.2=новая задача
 CreateTask.3=добавить задачу
