@@ -1,3 +1,4 @@
+Begin=начало
 DateFormat.1=dd.MM.yyyy
 DateFormat.2=dd MM yyyy
 TimeFormat.1=HH:mm

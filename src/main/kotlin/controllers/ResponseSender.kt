@@ -139,6 +139,10 @@ class ResponseSender(
         baseState(userId, Messages.getMessage("UnknownMessage"))
     }
 
+    fun beginMessage(userId: Int) {
+        baseState(userId, Messages.getMessage("BeginMessage"))
+    }
+
     fun showDailyTasks(userId: Int, tasks: String) {
         if (tasks.isBlank()) {
             baseState(userId, Messages.getMessage("NoTasks"))
