@@ -25,6 +25,7 @@ class Router(
 
     private fun messageDeterminer(messageEvent: MessageNew) {
         when (messageEvent.message.text.lowercase(Locale.getDefault())) {
+            in InputMessages.getMessages("Begin") -> commonController.begin(messageEvent)
             in InputMessages.getMessages("CreateTask") -> taskController.startTaskCreation(messageEvent)
             in InputMessages.getMessages("ShowDailyTasks") -> taskController.showDailyTasks(messageEvent)
             in InputMessages.getMessages("ShowWeeklyTasks") -> taskController.showWeeklyTasks(messageEvent)
