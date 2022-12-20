@@ -13,6 +13,7 @@ interface TaskRepository {
     fun setText(userId: Int, text: String)
     fun setCreationFinished(userId: Int, creationFinished: Boolean)
     fun removeUnfinishedTask(userId: Int)
+    fun deleteTaskById(userId: Int, taskId: Long)
     fun findTasksByAuthorId(authorId: Int): List<Task>
     fun findUnfinishedTaskByAuthorId(authorId: Int): Task?
 }

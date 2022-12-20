@@ -30,3 +30,11 @@ fun Task.previewDaily(): String {
         DateTimeFormatter.ofPattern(Messages.getMessage("PreviewTimeFormat")).format(time)
     } - \"$text\""
 }
+
+fun Task.previewWithIndex(index: Long): String {
+    return "[$index] ${
+        DateTimeFormatter.ofPattern(Messages.getMessage("PreviewDateFormat")).format(date)
+    } ${
+        DateTimeFormatter.ofPattern(Messages.getMessage("PreviewTimeFormat")).format(time)
+    } [${Messages.getMessage("TaskInfo.Repeat.${repeat.name}")}] - \"$text\""
+}
