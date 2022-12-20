@@ -151,6 +151,25 @@ class MariaDbTaskRepositoryImpl(
         }
     }
 
+    override fun deleteTaskById(userId: Int, taskId: Long) {
+        try {
+            dataSource.connection.use { connection ->
+                connection.prepareStatement(
+                    "DELETE FROM `Tasks` WHERE authorId = ? and id = ? and creationFinished = true"
+                ).use { statement ->
+                    statement.setInt(1, userId)
+                    statement.setLong(2, taskId)
+
+                    if (statement.executeUpdate() != 1) {
+                        System.err.println("Couldn't delete task [$taskId] for user $userId: Update unsuccessful")
+                    }
+                }
+            }
+        } catch (e: SQLException) {
+            System.err.println("Couldn't delete task [$taskId] for user $userId: $e")
+        }
+    }
+
     override fun findTasksByAuthorId(authorId: Int): List<Task> {
         try {
             dataSource.connection.use { connection ->

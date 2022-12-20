@@ -59,4 +59,9 @@ class TaskService(
     fun cancelTaskCreation(userId: Int) {
         taskRepository.removeUnfinishedTask(userId)
     }
+
+    fun deleteTask(userId: Int, taskId: Long) {
+        cache.invalidate(userId)
+        taskRepository.deleteTaskById(userId, taskId)
+    }
 }

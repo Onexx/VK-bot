@@ -40,3 +40,6 @@ ShowAllTasks.3=показать все задачи
 ShowAllTasks.4=покажи все задачи
 ShowAllTasks.5=вывести все задачи
 ShowAllTasks.6=выведи все задачи
+DeleteTask.1=удалить задачу
+DeleteTask.2=стереть задачу
+DeleteTask.3=удали задачу

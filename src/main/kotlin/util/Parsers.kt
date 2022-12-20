@@ -42,4 +42,13 @@ object Parsers {
         }
         return date
     }
+
+    fun parseLong(text: String): Long {
+        return try {
+            text.toLong()
+        } catch (e: NumberFormatException) {
+            -1
+        }
+
+    }
 }

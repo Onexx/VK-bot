@@ -30,6 +30,7 @@ class Router(
             in InputMessages.getMessages("ShowDailyTasks") -> taskController.showDailyTasks(messageEvent)
             in InputMessages.getMessages("ShowWeeklyTasks") -> taskController.showWeeklyTasks(messageEvent)
             in InputMessages.getMessages("ShowAllTasks") -> taskController.showAllTasks(messageEvent)
+            in InputMessages.getMessages("DeleteTask") -> taskController.startTaskDeletion(messageEvent)
             else -> commonController.unknown(messageEvent)
         }
     }
@@ -41,6 +42,7 @@ class Router(
             TASK_CREATION_SET_REPEAT -> taskController.setRepeat(messageEvent)
             TASK_CREATION_SET_TEXT -> taskController.setText(messageEvent)
             TASK_CREATION_CONFIRMATION -> taskController.confirmation(messageEvent)
+            TASK_DELETION -> taskController.deleteTask(messageEvent)
             DIALOG -> throw IllegalStateException("DIALOG state is not allowed in stateDeterminer")
         }
     }

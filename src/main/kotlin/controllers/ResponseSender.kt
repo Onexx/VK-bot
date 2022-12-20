@@ -176,6 +176,38 @@ class ResponseSender(
         }
     }
 
+    fun deleteTask(userId: Int, tasks: String) {
+        if (tasks.isBlank()) {
+            baseState(userId, Messages.getMessage("NoTasks"))
+        } else {
+            taskDeletionState(
+                userId, Messages.getMessage("AllTasksList") + "\n"
+                        + tasks + "\n"
+                        + Messages.getMessage("DeletionHelp")
+            )
+        }
+    }
+
+    fun deleteTaskRetry(userId: Int) {
+        taskDeletionState(userId, Messages.getMessage("DeleteTaskRetry"))
+    }
+
+    private fun taskDeletionState(userId: Int, messageToSend: String) = runBlocking {
+        client.sendMessage {
+            message = messageToSend
+            peerId = userId
+            keyboard = keyboard {
+                row {
+                    secondaryButton(Messages.getMessage("Buttons.Cancel"))
+                }
+            }
+        }.execute()
+    }
+
+    fun taskDeletedSuccessfully(userId: Int) {
+        baseState(userId, Messages.getMessage("TaskDeletedSuccessfully"))
+    }
+
     private fun baseState(userId: Int, messageToSend: String) = runBlocking {
         client.sendMessage {
             message = messageToSend
@@ -192,6 +224,9 @@ class ResponseSender(
                 }
                 row {
                     secondaryButton(Messages.getMessage("Buttons.ShowAllTasks"))
+                }
+                row {
+                    secondaryButton(Messages.getMessage("Buttons.DeleteTask"))
                 }
             }
         }.execute()

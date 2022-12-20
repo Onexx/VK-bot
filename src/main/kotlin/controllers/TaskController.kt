@@ -1,12 +1,9 @@
 package controllers
 
 import com.petersamokhin.vksdk.core.model.event.MessageNew
+import model.domain.*
 import model.domain.DialogState.*
-import model.domain.Repeats
 import model.domain.Repeats.*
-import model.domain.Task
-import model.domain.preview
-import model.domain.previewDaily
 import model.service.StateService
 import model.service.TaskService
 import util.InputMessages
@@ -170,6 +167,37 @@ class TaskController(
             else -> {
                 responseSender.taskCreationConfirmationRetry(userId)
             }
+        }
+    }
+
+    fun startTaskDeletion(messageEvent: MessageNew) {
+        val userId = messageEvent.message.peerId
+        stateService.saveState(userId, TASK_DELETION)
+        val tasks = taskService.getAllTasks(userId)
+            .sortedBy { it.id }
+            .joinToString("\n") { task ->
+                task.previewWithIndex(task.id)
+            }
+
+        responseSender.deleteTask(userId, tasks)
+    }
+
+    fun deleteTask(messageEvent: MessageNew) {
+        if (messageEvent.message.text.lowercase(Locale.getDefault()) in InputMessages.getMessages("Cancel")) {
+            cancel(messageEvent)
+            return
+        }
+
+        val userId = messageEvent.message.peerId
+        val index = Parsers.parseLong(messageEvent.message.text.lowercase(Locale.getDefault()))
+        val matchingTasks =
+            taskService.getAllTasks(userId).stream().filter { it.id == index }.collect(Collectors.toList())
+        if (matchingTasks.size == 1) {
+            stateService.saveState(userId, DIALOG)
+            taskService.deleteTask(userId, index)
+            responseSender.taskDeletedSuccessfully(userId)
+        } else {
+            responseSender.deleteTaskRetry(userId)
         }
     }
 
