@@ -10,6 +10,14 @@ The project is built with Gradle.  Run Gradle to build the project using the fol
 ```
 The code also contains semi-automated deployment scripts `deploy.bat` and `deploy.sh` that contain commands to build the project and push it to Docker Hub.
 
+The following environment variables are required to run the project:
+```
+DATABASE_URL
+DATABASE_USER
+DATABASE_PASSWORD
+GROUP_ID
+ACCESS_TOKEN
+```
 ## Functionality
  - create new task with custom date, time, repeat and text
  - list all created tasks
