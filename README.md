@@ -27,7 +27,7 @@ ACCESS_TOKEN
 
 ## Technologies used
  - Gradle
- - MariaDB + MyPHPAdmin
+ - MariaDB + phpMyAdmin
  - Guava
  - [vk-sdk-kotlin](https://github.com/vksdk/vk-sdk-kotlin) + OkHttp
  
